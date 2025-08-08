@@ -1,0 +1,127 @@
+/* Main container */
+.ProductsTable {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+    font-family: Arial, sans-serif;
+    background-color: #ffffff;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+  }
+  
+  /* Table header */
+  .ProductsTable thead {
+    background-color: #007bff;
+    color: white;
+  }
+  
+  .ProductsTable th {
+    padding: 12px;
+    text-align: left;
+    font-size: 16px;
+  }
+  
+  /* Table body rows */
+  .ProductsTable td {
+    padding: 10px;
+    border-bottom: 1px solid #ddd;
+    font-size: 14px;
+    vertical-align: middle;
+  }
+  
+  /* Image styling */
+  .ProductsTable img {
+    border-radius: 6px;
+    border: 1px solid #ccc;
+  }
+  
+  /* Alternate row background */
+  .ProductsTable tbody tr:nth-child(even) {
+    background-color: #f8f8f8;
+  }
+  
+  /* Hover effect */
+  .ProductsTable tbody tr:hover {
+    background-color: #f1f1f1;
+  }
+  
+  /* Delete button styling */
+  .ProductsTable button {
+    padding: 6px 12px;
+    background-color: #dc3545;
+    border: none;
+    color: white;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.2s ease-in-out;
+  }
+  
+  .ProductsTable button:hover {
+    background-color: #b02a37;
+  }
+  
+  /* Responsive table for mobile */
+  @media (max-width: 768px) {
+    .ProductsTable th,
+    .ProductsTable td {
+      padding: 8px;
+      font-size: 13px;
+    }
+  
+    .ProductsTable img {
+      width: 60px;
+    }
+  }
+  
+
+
+  .pagenotfound {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+    background: linear-gradient(135deg, #f3f3f3, #dcdcdc);
+    text-align: center;
+    font-family: Arial, sans-serif;
+  }
+  
+  .pagenotfound h1 {
+    font-size: 8rem;
+    margin: 0;
+    color: #ff4d4d;
+    animation: pulse 1.5s infinite;
+  }
+  
+  .pagenotfound div {
+    font-size: 1.5rem;
+    color: #555;
+    margin-bottom: 20px;
+  }
+  
+  .pagenotfound a {
+    padding: 10px 20px;
+    background-color: #4cafef;
+    color: white;
+    text-decoration: none;
+    border-radius: 5px;
+    font-weight: bold;
+    transition: background 0.3s ease;
+  }
+  
+  .pagenotfound a:hover {
+    background-color: #3298db;
+  }
+  
+  /* Animation for 404 */
+  @keyframes pulse {
+    0% {
+      transform: scale(1);
+    }
+    50% {
+      transform: scale(1.1);
+    }
+    100% {
+      transform: scale(1);
+    }
+  }
+  
