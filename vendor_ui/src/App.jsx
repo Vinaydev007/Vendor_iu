@@ -1,6 +1,6 @@
 import React from 'react'
 import './App.css'
-import LandingPage from './DashBoard/pages/LandingPage'
+import LandingPage from './DashBoard/component/pages/LandingPage'
 import { Route,Routes } from 'react-router-dom'
 import NotFound from './DashBoard/component/NotFounf'
 

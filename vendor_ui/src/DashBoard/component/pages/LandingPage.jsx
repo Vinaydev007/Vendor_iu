@@ -1,12 +1,12 @@
 import React from "react";
-import NavBar from "../component/NavBar";
-import SideBar from "../component/SideBar";
-import Login from "../component/forms/login";
-import Register from "../component/forms/Register";
-import Add_Restaurant from "../component/forms/Add_Restaurant";
-import Add_Product from "../component/forms/Add_Product";
+import NavBar from "../NavBar";
+import SideBar from "../SideBar";
+import Login from "../forms/Login";
+import Register from "../forms/Register";
+import Add_Restaurant from "../forms/Add_Restaurant";
+import Add_Product from "../forms/Add_Product";
 import { useState,useEffect } from "react";
-import AllProducts from "../component/AllProducts";
+import AllProducts from "../AllProducts";
 
 const LandingPage = () => {
   const [login,setlogin]=useState(false);
