@@ -1,336 +1,140 @@
-// import React, { useState } from "react";
-// import { API_URL } from "../data/apipath";
+const path = require("path");
+const fs = require("fs");
+const multer = require("multer");
+const jwt = require("jsonwebtoken");
+const Restaurant = require("../models/Restaurant");
+const Vendor = require("../models/Vendor");
 
-// function Add_Restaurant() {
-//   const [firmname, setFirmname] = useState("");
-//   const [area, setArea] = useState("");
-//   const [category, setCategory] = useState([]);
-//   const [region, setRegion] = useState([]);
-//   const [offer, setOffer] = useState("");
-//   const [file, setFile] = useState(null);
-
-//   // ✅ Toggle checkboxes
-//   const handleCheckboxChange = (setter, currentValues) => (event) => {
-//     const value = event.target.value;
-//     setter(
-//       currentValues.includes(value)
-//         ? currentValues.filter((item) => item !== value)
-//         : [...currentValues, value]
-//     );
-//   };
-
-//   // ✅ Image Upload
-//   const handleImageUpload = (e) => {
-//     setFile(e.target.files[0]);
-//   };
-
-//   // ✅ Submit Form
-//   const handleFirmSubmit = async (e) => {
-//     e.preventDefault();
-
-//     const loginToken = localStorage.getItem("login token");
-//     if (!loginToken) {
-//       alert("Please login first");
-//       return;
-//     }
-
-//     try {
-//       const formData = new FormData();
-//       formData.append("firmname", firmname);
-//       formData.append("area", area);
-//       formData.append("offer", offer);
-//       if (file) formData.append("image", file);
-
-//       category.forEach((value) => formData.append("category", value));
-//       region.forEach((value) => formData.append("region", value));
-
-//       const response = await fetch(`${API_URL}/firm/add-firm`, {
-//         method: "POST",
-//         headers: {
-//           Authorization: `Bearer ${loginToken}`, // ✅ Send token in standard format
-//         },
-//         body: formData,
-//       });
-
-//       let data;
-//       try {
-//         data = await response.json();
-//       } catch {
-//         throw new Error("Server returned invalid JSON (possibly HTML error page)");
-//       }
-
-//       if (response.ok) {
-//         alert("Firm added successfully");
-//         localStorage.setItem("Id", data.firmid);
-
-//         // Reset form
-//         setFirmname("");
-//         setArea("");
-//         setOffer("");
-//         setCategory([]);
-//         setRegion([]);
-//         setFile(null);
-//       } else if (data.message === "vendor should have only one restaurant") {
-//         alert("You can only add one restaurant");
-//       } else {
-//         alert(data.message || "Failed to add firm");
-//       }
-//     } catch (error) {
-//       console.error("Error submitting firm:", error);
-//       alert(error.message || "Something went wrong");
-//     }
-//   };
-
-//   return (
-//     <div className="Restaurantsection">
-//       <form className="formtable" onSubmit={handleFirmSubmit}>
-//         <h3>Restaurant</h3>
-
-//         <label>Restaurant Name</label>
-//         <input
-//           type="text"
-//           value={firmname}
-//           onChange={(e) => setFirmname(e.target.value)}
-//           required
-//         />
-
-//         <label>Area</label>
-//         <input
-//           type="text"
-//           value={area}
-//           onChange={(e) => setArea(e.target.value)}
-//           required
-//         />
-
-//         {/* ✅ Category */}
-//         <div className="checkInp">
-//           <label>Category</label>
-//           <div className="Input-conatiner">
-//             {["veg", "non-veg"].map((item) => (
-//               <div key={item} className="checkbox-container">
-//                 <label>{item}</label>
-//                 <input
-//                   type="checkbox"
-//                   value={item}
-//                   checked={category.includes(item)}
-//                   onChange={handleCheckboxChange(setCategory, category)}
-//                 />
-//               </div>
-//             ))}
-//           </div>
-//         </div>
-
-//         {/* ✅ Region */}
-//         <div className="checkInp">
-//           <label>Region</label>
-//           <div className="Input-conatiner">
-//             {["north-indian", "south-indian", "bakery", "chinese"].map((item) => (
-//               <div key={item} className="checkbox-container">
-//                 <label>{item}</label>
-//                 <input
-//                   type="checkbox"
-//                   value={item}
-//                   checked={region.includes(item)}
-//                   onChange={handleCheckboxChange(setRegion, region)}
-//                 />
-//               </div>
-//             ))}
-//           </div>
-//         </div>
-
-//         <label>Offer</label>
-//         <input
-//           type="text"
-//           value={offer}
-//           onChange={(e) => setOffer(e.target.value)}
-//         />
-
-//         <label>Restaurant Image</label>
-//         <input type="file" accept="image/*" onChange={handleImageUpload} />
-
-//         <div className="btn2">
-//           <button type="submit">Submit</button>
-//         </div>
-//       </form>
-//     </div>
-//   );
-// }
-
-// export default Add_Restaurant;
-
-import React, { useState } from "react";
-import { API_URL } from "../data/apipath";
-
-function Add_Restaurant() {
-  const [firmname, setFirmname] = useState("");
-  const [area, setArea] = useState("");
-  const [category, setCategory] = useState([]);
-  const [region, setRegion] = useState([]);
-  const [offer, setOffer] = useState("");
-  const [file, setFile] = useState(null);
-  const [submitting, setSubmitting] = useState(false);
-
-  const handleCheckboxChange = (setter, currentValues) => (event) => {
-    const value = event.target.value;
-    setter(
-      currentValues.includes(value)
-        ? currentValues.filter((item) => item !== value)
-        : [...currentValues, value]
-    );
-  };
-
-  const handleImageUpload = (e) => {
-    setFile(e.target.files[0] || null);
-  };
-
-  const handleFirmSubmit = async (e) => {
-    e.preventDefault();
-
-    const loginToken = localStorage.getItem("login token");
-    if (!loginToken) {
-      alert("Please login first");
-      return;
-    }
-
-    if (submitting) return;
-    setSubmitting(true);
-
-    try {
-      const formData = new FormData();
-      formData.append("firmname", firmname.trim());
-      formData.append("area", area.trim());
-      formData.append("offer", offer.trim());
-
-      // Append arrays correctly (multiple entries with the same key)
-      category.forEach((value) => formData.append("category", value));
-      region.forEach((value) => formData.append("region", value));
-
-      if (file) formData.append("image", file);
-
-      const response = await fetch(`${API_URL}/firm/add-firm`, {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${loginToken}`,
-          // DO NOT set Content-Type for FormData; browser sets boundary automatically
-        },
-        body: formData,
-      });
-
-      // Guard: ensure we only parse JSON
-      const contentType = response.headers.get("content-type") || "";
-      if (!contentType.includes("application/json")) {
-        const text = await response.text(); // helpful for debugging if server sent HTML
-        throw new Error(
-          `Server did not return JSON (status ${response.status}). Body starts with: ${text.slice(
-            0,
-            80
-          )}`
-        );
-      }
-
-      const data = await response.json();
-
-      if (!response.ok) {
-        // Specific vendor-only-one message casing normalized
-        const msg = data.message || "Failed to add firm";
-        alert(msg);
-        return;
-      }
-
-      alert("Firm added successfully");
-      if (data.firmid) {
-        localStorage.setItem("Id", data.firmid);
-      }
-
-      // Reset form
-      setFirmname("");
-      setArea("");
-      setOffer("");
-      setCategory([]);
-      setRegion([]);
-      setFile(null);
-    } catch (error) {
-      console.error("Error submitting firm:", error);
-      alert(error.message || "Something went wrong");
-    } finally {
-      setSubmitting(false);
-    }
-  };
-
-  return (
-    <div className="Restaurantsection">
-      <form className="formtable" onSubmit={handleFirmSubmit}>
-        <h3>Restaurant</h3>
-
-        <label>Restaurant Name</label>
-        <input
-          type="text"
-          value={firmname}
-          onChange={(e) => setFirmname(e.target.value)}
-          required
-        />
-
-        <label>Area</label>
-        <input
-          type="text"
-          value={area}
-          onChange={(e) => setArea(e.target.value)}
-          required
-        />
-
-        <div className="checkInp">
-          <label>Category</label>
-          <div className="Input-conatiner">
-            {["veg", "non-veg"].map((item) => (
-              <div key={item} className="checkbox-container">
-                <label>{item}</label>
-                <input
-                  type="checkbox"
-                  value={item}
-                  checked={category.includes(item)}
-                  onChange={handleCheckboxChange(setCategory, category)}
-                />
-              </div>
-            ))}
-          </div>
-        </div>
-
-        <div className="checkInp">
-          <label>Region</label>
-          <div className="Input-conatiner">
-            {["north-indian", "south-indian", "bakery", "chinese"].map((item) => (
-              <div key={item} className="checkbox-container">
-                <label>{item}</label>
-                <input
-                  type="checkbox"
-                  value={item}
-                  checked={region.includes(item)}
-                  onChange={handleCheckboxChange(setRegion, region)}
-                />
-              </div>
-            ))}
-          </div>
-        </div>
-
-        <label>Offer</label>
-        <input
-          type="text"
-          value={offer}
-          onChange={(e) => setOffer(e.target.value)}
-        />
-
-        <label>Restaurant Image</label>
-        <input type="file" accept="image/*" onChange={handleImageUpload} />
-
-        <div className="btn2">
-          <button type="submit" disabled={submitting}>
-            {submitting ? "Submitting..." : "Submit"}
-          </button>
-        </div>
-      </form>
-    </div>
-  );
+// Ensure uploads directory exists
+const uploadsDir = path.join(__dirname, "..", "uploads");
+if (!fs.existsSync(uploadsDir)) {
+  fs.mkdirSync(uploadsDir, { recursive: true });
 }
 
-export default Add_Restaurant;
+// ✅ Multer storage configuration
+const storage = multer.diskStorage({
+  destination: (_req, _file, cb) => cb(null, uploadsDir),
+  filename: (_req, file, cb) =>
+    cb(null, Date.now() + path.extname(file.originalname)),
+});
 
+// ✅ Allow only image files
+const fileFilter = (_req, file, cb) => {
+  if (file.mimetype && file.mimetype.startsWith("image/")) {
+    cb(null, true);
+  } else {
+    cb(new Error("Only image files are allowed"), false);
+  }
+};
+
+const upload = multer({ storage, fileFilter });
+
+// ✅ JWT Authentication Middleware
+const auth = (req, res, next) => {
+  try {
+    const token = req.headers.authorization?.split(" ")[1];
+    if (!token) {
+      return res.status(401).json({ message: "No token provided" });
+    }
+
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    req.vendorId = decoded.id;
+    next();
+  } catch (err) {
+    console.error("JWT Auth Error:", err.message);
+    return res.status(401).json({ message: "Invalid or expired token" });
+  }
+};
+
+// ✅ Add Firm
+const addfirm = async (req, res) => {
+  try {
+    const { firmname, area, offer } = req.body;
+
+    // Handle single/multiple values
+    const toArray = (v) =>
+      v == null ? [] : Array.isArray(v) ? v : [v];
+    const category = toArray(req.body.category);
+    const region = toArray(req.body.region);
+
+    const image = req.file ? req.file.filename : null;
+
+    // Required fields check
+    if (!firmname || !area || category.length === 0 || region.length === 0) {
+      return res
+        .status(400)
+        .json({ message: "All required fields must be filled" });
+    }
+
+    const vendor = await Vendor.findById(req.vendorId);
+    if (!vendor) {
+      return res.status(404).json({ message: "Vendor not found" });
+    }
+
+    // Ensure only one restaurant per vendor
+    if (Array.isArray(vendor.Restaurant) && vendor.Restaurant.length > 0) {
+      return res
+        .status(400)
+        .json({ message: "Vendor should have only one restaurant" });
+    }
+
+    const firm = new Restaurant({
+      firmname,
+      area,
+      category,
+      region,
+      offer,
+      image,
+      vendor: vendor._id,
+    });
+
+    const savedFirm = await firm.save();
+
+    vendor.Restaurant.push(savedFirm._id);
+    await vendor.save();
+
+    return res.status(200).json({
+      message: "Firm added successfully",
+      firmid: savedFirm._id,
+    });
+  } catch (error) {
+    console.error("Error in addfirm:", error);
+    return res
+      .status(500)
+      .json({ message: "Server error while adding firm" });
+  }
+};
+
+// ✅ Delete Restaurant
+const deleteRestaurantById = async (req, res) => {
+  try {
+    const restaurantId = req.params.restaurantId;
+
+    const deletedRestaurant = await Restaurant.findByIdAndDelete(restaurantId);
+    if (!deletedRestaurant) {
+      return res.status(404).json({ message: "Restaurant not found" });
+    }
+
+    // Remove reference from vendors
+    await Vendor.updateMany(
+      { Restaurant: restaurantId },
+      { $pull: { Restaurant: restaurantId } }
+    );
+
+    return res
+      .status(200)
+      .json({ message: "Restaurant deleted successfully" });
+  } catch (error) {
+    console.error("Error in deleteRestaurantById:", error);
+    return res
+      .status(500)
+      .json({ message: "Server error while deleting restaurant" });
+  }
+};
+
+module.exports = {
+  upload, // Multer middleware
+  auth,   // JWT middleware
+  addfirm,
+  deleteRestaurantById,
+};
