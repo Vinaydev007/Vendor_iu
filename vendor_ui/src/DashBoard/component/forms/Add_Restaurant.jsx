@@ -29,6 +29,7 @@ function Add_Restaurant() {
     e.preventDefault();
 
     const loginToken = localStorage.getItem("login token");
+    console.log(loginToken);
     if (!loginToken) {
       alert("Please login first");
       return;
@@ -47,7 +48,7 @@ function Add_Restaurant() {
       const response = await fetch(`${API_URL}/firm/add-firm`, {
         method: "POST",
         headers: {
-          Authorization: `Bearer ${loginToken}`, // ✅ Send token in standard format
+          Authorization:`Bearer ${loginToken}`, // ✅ Send token in standard format
         },
         body: formData,
       });
