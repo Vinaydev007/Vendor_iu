@@ -1,89 +1,86 @@
 import React, { useState } from 'react';
 import { API_URL } from '../data/apipath';
+import { ThreeCircles } from 'react-loader-spinner';
 
-function Register({handlelogin}) {
-  const [Name, setUserName] = useState("");
-  const [Email, setEmail] = useState("");
-  const [Password, setPassword] = useState("");
-  const [Error, setError] = useState("");
-  const [Loading, setLoading] = useState(false);
+const Register = ({ showLoginHandler }) => {
+  const [username, setUsername] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false); // Set loading to false initially
+  const [showPassword, setShowPassword] = useState(false);
+
+  const handleShowPassword = () => {
+    setShowPassword(!showPassword);
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setLoading(true);
-    setError("");
-
+    setLoading(true); // Set loading to true when the request starts
     try {
       const response = await fetch(`${API_URL}/vendor/register`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
         },
-        body: JSON.stringify({ Name, Email, Password })
+        body: JSON.stringify({ username, email, password })
       });
 
       const data = await response.json();
-
       if (response.ok) {
         console.log(data);
-        alert("Vendor register success");
-        setUserName('');
-        setEmail('');
-        setPassword('');
-        handlelogin()
+        setUsername("");
+        setEmail("");
+        setPassword("");
+        alert("Vendor registered successfully");
+        showLoginHandler();
       } else {
-        setError(data.message || "Registration failed");
+        setError(data.error);
+        alert("Registration Failed, Contact Admin")
       }
-     
-
     } catch (error) {
       console.error("Registration failed", error);
-      setError("Something went wrong. Try again later.");
+      alert("Registration failed");
     } finally {
-      setLoading(false);
+      setLoading(false); 
     }
   };
 
   return (
-    <div className='Registersection'>
-      <form className='authform' onSubmit={handleSubmit}>
-        <h2>Vendor-Register</h2>
+    <div className="registerSection">
+     {loading && 
+      <div className="loaderSection">
+      <ThreeCircles
+        visible={loading}
+        height={100}
+        width={100}
+        color="#4fa94d"
+        ariaLabel="three-circles-loading"
+        wrapperStyle={{}}
+        wrapperClass=""
+      />
+      <p>Hi, Your Registration under process</p>
+    </div>
+     }
+{!loading &&     <form className='authForm' onSubmit={handleSubmit} autoComplete='off'>
 
-        {Error && <p style={{ color: "red" }}>{Error}</p>}
-
-        <label>Name</label>
-        <input
-          type="text"
-          placeholder='Enter the name'
-          name="Name"
-          value={Name}
-          onChange={(e) => setUserName(e.target.value)}
-        />
-
-        <label>Email</label>
-        <input
-          type="email"
-          placeholder='Enter Email'
-          name="Email"
-          value={Email}
-          onChange={(e) => setEmail(e.target.value)}
-        />
-
-        <label>Password</label>
-        <input
-          type="password"
-          placeholder='Enter Password'
-          name="Password"
-          value={Password}
-          onChange={(e) => setPassword(e.target.value)}
-        />
-
-        <button className="btn1" type='submit' disabled={Loading}>
-          {Loading ? "Submitting..." : "Submit"}
-        </button>
-      </form>
+<h3>Vendor Register</h3>
+<label>Username</label>
+<input type="text" name='username' value={username} onChange={(e) => setUsername(e.target.value)} placeholder='enter your name' /><br />
+<label>Email</label>
+<input type="text" name='email' value={email} onChange={(e) => setEmail(e.target.value)} placeholder='enter your email' /><br />
+<label>Password</label>
+<input type={showPassword ? "text" : "password"} value={password} onChange={(e) => setPassword(e.target.value)} name='password' placeholder='enter your password' /><br />
+<span className='showPassword'
+  onClick={handleShowPassword}
+>{showPassword ? 'Hide' : 'Show'}</span>
+<div className="btnSubmit">
+  <button type='submit'>Submit</button>
+</div>
+</form>}
+  
     </div>
   );
-}
+};
 
 export default Register;

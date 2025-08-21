@@ -1,17 +1,28 @@
 import React from 'react'
 
+const NavBar = ({showLoginHandler, showRegisterHandler, showLogOut, logOutHandler}) => {
+  
+  const firmName = localStorage.getItem('firmName')
 
-const NavBar = ({login,register,logout,logouthandler}) => {
-  const firmname=localStorage.getItem("RestaurantName");
   return (
-    <div className="main-block">
-        <div className="Company">Vendor DashBoard</div>
-        <div>{firmname}</div>
-        <div className="user-auth">
-          {!logout?<><span onClick={login}>Login</span>
-            <span onClick={register}>Register</span></>:<span onClick={logouthandler}>logout</span>}
+    <div className="navSection">
+      
+        <div className="company">
+            Vendor Dashboard
         </div>
-     </div>
+        <div className="firmName">
+            <h4>Firname : {firmName}</h4>
+        </div>
+        <div className="userAuth">
+          {!showLogOut ?  <>
+           <span onClick={showLoginHandler}>Login / </span>
+          <span onClick={showRegisterHandler}>Register</span>
+          </> : <span onClick={logOutHandler}
+          className='logout'
+          >Logout</span>  }
+          
+        </div>
+    </div>
   )
 }
 

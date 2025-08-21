@@ -1,16 +1,19 @@
 import React from 'react'
-import './App.css'
 import LandingPage from './DashBoard/component/pages/LandingPage'
-import { Route,Routes } from 'react-router-dom'
+import { Routes, Route } from 'react-router-dom'
+
+// import "./App.css"
+// import NavBar from './vendorDashboard/components/NavBar'
+import Login from './DashBoard/component/forms/Login'
 import NotFound from './DashBoard/component/NotFounf'
 
-function App() {
+const App = () => {
   return (
     <div>
-        <Routes>
-            <Route path="/" element={<LandingPage/>} />
-            <Route path="/*" element={<NotFound/>}/>
-        </Routes>
+      <Routes>
+          <Route path='/' element = {<LandingPage />}/>
+          <Route path='/*' element = {<NotFound />} />
+      </Routes>
     </div>
   )
 }

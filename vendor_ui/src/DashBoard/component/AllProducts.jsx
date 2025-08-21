@@ -1,89 +1,87 @@
-import './AllProducts.css';
-import React, { useState, useEffect } from 'react';
-import { API_URL } from "./data/apipath";
+import React,{useState, useEffect} from 'react'
+import { API_URL } from './data/apipath';
 
 const AllProducts = () => {
-  const [products, setProducts] = useState([]);
+    const [products, setProducts]= useState([]);
 
-  const productHandler = async () => {
-    const restaurantId = localStorage.getItem('Id');
-    try {
-      const response = await fetch(`${API_URL}/product/${restaurantId}/products`);
-      const newProducts = await response.json();
-      setProducts(newProducts.products);
-      console.log(newProducts);
-    } catch (error) {
-      console.error(error);
-      alert("Failed to fetch products");
+    const productsHandler = async()=>{
+            const firmId = localStorage.getItem('firmId');
+        try {
+                const response = await fetch(`${API_URL}/product/${firmId}/products`);
+                const newProductsData = await response.json();
+                setProducts(newProductsData.products);
+                console.log(newProductsData);
+        } catch (error) {
+            console.error("failed to fetch products", error);
+            alert('failed to fetch products')
+        }
     }
-  };
 
-  // ✅ useEffect must be at the top level
-  useEffect(() => {
-    productHandler();
-    console.log("useEffect ran");
-  }, []);
+    useEffect(()=>{
+        productsHandler()
+        console.log('this is useEffect')
+    },[])
 
-  const Deletehandler = async (productId) => {
-    if (!window.confirm("Are you sure you want to delete this product?")) return;
-  
-    try {
-      console.log("Deleting:", productId);
-      const response = await fetch(`${API_URL}/product/${productId}`, {
-        method: "DELETE"
-      });
-  
-      if (response.ok) {
-        setProducts(prevProducts => prevProducts.filter(product => product._id !== productId));
-        alert("Your product was deleted");
-      } else {
-        alert("Failed to delete product");
-      }
-    } catch (error) {
-      console.error(error);
-      alert("Error deleting product");
+    const deleteProductById = async(productId)=>{
+                try {
+                        const response = await fetch(`${API_URL}/product/${productId}`,{
+                            method: 'DELETE'
+                        })
+                    if(response.ok){
+                        setProducts(products.filter(product =>product._id !== productId));
+                        confirm("are you sure, you want to delete?")
+                        alert("Product deleted Successfully")
+                    }
+                } catch (error) {
+                    console.error('Failed to delete product');
+                    alert('Failed to delete product')
+                }
     }
-  };
-  
-  
+
+    
   return (
-    <div>
-      {!products ? (
-        <p>No products listed</p>
-      ) : (
-        <table className='ProductsTable'>
-          <thead>
-            <tr>
-              <th>ProductName</th>
-              <th>Price</th>
-              <th>Image</th>
-              <th>Delete</th>
-            </tr>
-          </thead>
-          <tbody>
-            {products.map((item) => (
-              <tr key={item._id}>
-                <td>{item.ProductName}</td>
-                <td>{item.Price}</td>
-                <td>
-                  {item.image && (
-                    <img
-                      src={`${API_URL}/uploads/${item.image}`}
-                      alt={item.ProductName}
-                      style={{ width: "80px" }}
-                    />
-                  )}
-                </td>
-                <td>
-                  <button onClick={()=>Deletehandler(item._id)}>Delete</button>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      )}
+    <div className='productSection'>
+        {!products ? (
+            <p>No products added</p>
+        ) : (
+            <table className="product-table">
+                <thead>
+                    <tr>
+                        <th>Product Name</th>
+                        <th>Price</th>
+                        <th>Image</th>
+                        <th>Delete</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {products.map((item)=>{
+                            return (
+                                <>
+                                    <tr key={item._id}>
+                                        <td>{item.productName}</td>
+                                        <td>₹{item.price}</td>
+                                    <td>
+                                        {item.image && (
+                                            <img src={`${API_URL}/uploads/${item.image}`} 
+                                            alt={item.productName}
+                                            style={{ width: '50px', height:'50px'  }}
+                                            />
+                                        )}
+                                    </td>
+                                    <td>
+                                        <button onClick={()=>deleteProductById(item._id)}
+                                        className='deleteBtn'
+                                        >Delete</button>
+                                    </td>
+                                    </tr>
+                                </>
+                            )
+                    })}
+                </tbody>
+            </table>
+         )}
     </div>
-  );
-};
+  )
+}
 
-export default AllProducts;
+export default AllProducts
